@@ -1,14 +1,18 @@
-require('dotenv').config();
+// Load environment
 
+if(process.env.NODE_ENV === 'production') require('dotenv').config({ path: `./.env.${process.env.NODE_ENV}` });
+else require('dotenv').config();
+
+//import libraries
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const sequelize = require('./config/database');
 
-
+//initialize express app
 const app = express();
 
-//middleware
+//middlewares
 app.use(cors());
 app.use(express.json());
 app.use(helmet());
