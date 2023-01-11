@@ -79,11 +79,17 @@ UserController.updateUser = async (req, res) => {
                 username: req.params.username
             }
         })
-        res.status(200).json({
-            status: 200,
-            message: 'User updated successfully',
-            data: user
-        })
+        if (user[0] === 0) {
+            res.status(404).json({
+                status: 404,
+                message: 'User not found'
+            })
+        } else {
+            res.status(200).json({
+                status: 200,
+                message: 'User updated successfully',
+            })
+        }
     } catch (error) {
         res.status(500).json({
             status: 500,
@@ -103,14 +109,22 @@ UserController.deleteUser = async (req, res) => {
             status: 'inactive'
         }, {
             where: {
-                username: req.params.username
+                username: req.params.username,
+                status: 'active'
             }
         })
-        res.status(200).json({
-            status: 200,
-            message: 'User deleted successfully',
-            data: user
-        })
+        if (user[0] === 0) {
+            res.status(404).json({
+                status: 404,
+                message: 'User not found'
+            })
+        }
+        else {
+            res.status(200).json({
+                status: 200,
+                message: 'User deleted successfully',
+            })
+        }
     } catch (error) {
         res.status(500).json({
             status: 500,
@@ -133,10 +147,41 @@ UserController.restoreUser = async (req, res) => {
                 username: req.params.username
             }
         })
+        if (user[0] === 0) {
+            res.status(404).json({
+                status: 404,
+                message: 'User not found'
+            })
+        }
+        else {
+            res.status(200).json({
+                status: 200,
+                message: 'User activated successfully',
+            })
+        }
+    } catch (error) {
+        res.status(500).json({
+            status: 500,
+            message: error.message
+        })
+    }
+}
+
+/**
+ * Get all active users
+ * @param {*} req - request object
+ * @param {*} res - response object
+ */
+UserController.getActiveUsers = async (req, res) => {
+    try {
+        const users = await User.findAll({
+            where: {
+                status: 'active'
+            }
+        })
         res.status(200).json({
             status: 200,
-            message: 'User activated successfully',
-            data: user
+            data: users
         })
     } catch (error) {
         res.status(500).json({
