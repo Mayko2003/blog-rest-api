@@ -1,5 +1,5 @@
-const User = require('../models')['User']
-
+const { User } = require('../models')
+const { handlePassword } = require('../utils')
 const UserController = {}
 
 /**
@@ -29,9 +29,12 @@ UserController.getUsers = async (req, res) => {
  */
 UserController.getUser = async (req, res) => {
     try {
+        const field = req.query.field || 'username'
+        const value = req.query.value
+
         const user = await User.findOne({
             where: {
-                username: req.params.username
+                [field]: value
             }
         })
         res.status(200).json({
@@ -53,6 +56,8 @@ UserController.getUser = async (req, res) => {
  */
 UserController.createUser = async (req, res) => {
     try {
+        const password = await handlePassword.hashPassword(req.body.password)
+        req.body.password = password
         const user = await User.create(req.body)
         res.status(201).json({
             status: 201,
