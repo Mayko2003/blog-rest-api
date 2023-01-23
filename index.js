@@ -1,13 +1,12 @@
 // Load environment
-
-if(process.env.NODE_ENV === 'production') require('dotenv').config({ path: `./.env.${process.env.NODE_ENV}` });
-else require('dotenv').config();
+const { loadEnvironment } = require('./utils')
+loadEnvironment();
 
 //import libraries
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
-const sequelize = require('./config/database');
+const db = require('./models');
 
 //initialize express app
 const app = express();
@@ -16,6 +15,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(helmet());
+app.use(express.static(process.env.STATIC_FOLDER))
 
 //routes
 app.use('/api', require('./routes'))
@@ -26,7 +26,7 @@ const port = process.env.PORT || 3000;
 //server
 async function main() {
     try {
-        await sequelize.authenticate();
+        await db.sequelize.authenticate();
         console.log('Database connected');
 
         app.listen(port, () => {
