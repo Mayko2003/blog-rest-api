@@ -9,10 +9,9 @@ module.exports = {
                 primaryKey: true,
                 type: Sequelize.BIGINT
             },
-            username: {
+            displayName: {
                 type: Sequelize.STRING,
                 allowNull: false,
-                unique: true
             },
             email: {
                 type: Sequelize.STRING,
@@ -31,9 +30,13 @@ module.exports = {
                 type: Sequelize.ENUM('admin', 'user'),
                 defaultValue: 'user',
             },
-            image: {
-                type: Sequelize.STRING,
-                allowNull: true
+            photoURL: {
+                type: Sequelize.BIGINT,
+                allowNull: true,
+                references: {
+                    model: 'Storages',
+                    key: 'id',
+                }
             }
         });
     },
