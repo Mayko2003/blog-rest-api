@@ -22,8 +22,12 @@ module.exports = {
                 allowNull: false
             },
             front_image: {
-                type: Sequelize.STRING,
-                allowNull: true
+                type: Sequelize.BIGINT,
+                allowNull: true,
+                references: {
+                    model: 'Storages',
+                    key: 'id',
+                }
             },
             likes: {
                 type: Sequelize.BIGINT,
@@ -31,7 +35,7 @@ module.exports = {
                 defaultValue: 0
             },
             status: {
-                type: Sequelize.ENUM('published', 'draft'),
+                type: Sequelize.ENUM('published', 'draft', 'deleted', 'blocked'),
                 defaultValue: 'draft'
             },
             userId: {
