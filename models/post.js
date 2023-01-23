@@ -41,6 +41,10 @@ module.exports = (sequelize, DataTypes) => {
     });
 
     Post.associate = function (models) {
+
+        models.Post.belongsTo(models.Storage, {
+            foreignKey: 'front_image',
+        })
     };
     return Post;
 };
