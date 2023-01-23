@@ -1,4 +1,7 @@
 'use strict';
+
+const { handlePassword } = require('../utils')
+
 module.exports = (sequelize, DataTypes) => {
     const User = sequelize.define('User', {
         id: {
@@ -7,10 +10,9 @@ module.exports = (sequelize, DataTypes) => {
             primaryKey: true,
             allowNull: false
         },
-        username: {
+        displayName: {
             type: DataTypes.STRING,
             allowNull: false,
-            unique: true
         },
         email: {
             type: DataTypes.STRING,
@@ -19,7 +21,7 @@ module.exports = (sequelize, DataTypes) => {
         },
         password: {
             type: DataTypes.STRING,
-            allowNull: false
+            allowNull: false,
         },
         status: {
             type: DataTypes.ENUM('active', 'inactive'),
@@ -28,6 +30,10 @@ module.exports = (sequelize, DataTypes) => {
         rol: {
             type: DataTypes.ENUM('admin', 'user'),
             defaultValue: 'user',
+        },
+        photoURL: {
+            allowNull: true,
+            type: DataTypes.STRING,
         }
     }, {
         timestamps: false,
@@ -65,6 +71,11 @@ module.exports = (sequelize, DataTypes) => {
             as: 'replies',
             foreignKey: 'userId',
             otherKey: 'commentId'
+        })
+
+        //One user have an avatar
+        models.User.belongsTo(models.Storage, {
+            foreignKey: 'photoURL',
         })
     }
     return User;
