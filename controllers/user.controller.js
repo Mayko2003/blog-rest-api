@@ -1,5 +1,6 @@
 const { User } = require('../models')
-const { handlePassword } = require('../utils')
+const { handlePassword, handleHttpError } = require('../utils')
+const { matchedData } = require('express-validator')
 const UserController = {}
 
 /**
@@ -15,10 +16,7 @@ UserController.getUsers = async (req, res) => {
             data: users
         })
     } catch (error) {
-        res.status(500).json({
-            status: 500,
-            error: error.message
-        })
+        handleHttpError(res, error.message, 500)
     }
 }
 
@@ -29,7 +27,9 @@ UserController.getUsers = async (req, res) => {
  */
 UserController.getUser = async (req, res) => {
     try {
-        const field = req.query.field || 'username'
+        const field = req.query.field || 'displayName'
+        if (field != 'displayName' && field != 'email') throw new Error('Invalid field')
+
         const value = req.query.value
 
         const user = await User.findOne({
@@ -42,10 +42,7 @@ UserController.getUser = async (req, res) => {
             data: user
         })
     } catch (error) {
-        res.status(500).json({
-            status: 500,
-            error: error.message
-        })
+        handleHttpError(res, error.message, 500)
     }
 }
 
@@ -56,19 +53,23 @@ UserController.getUser = async (req, res) => {
  */
 UserController.createUser = async (req, res) => {
     try {
+        
+
+        const cleanBody = matchedData(req)
         const password = await handlePassword.hashPassword(req.body.password)
-        req.body.password = password
-        const user = await User.create(req.body)
+        cleanBody.password = password
+
+        console.log(cleanBody)
+        
+
+        const user = await User.create(cleanBody)
         res.status(201).json({
             status: 201,
             message: 'User created successfully',
             data: user
         })
     } catch (error) {
-        res.status(500).json({
-            status: 500,
-            error: error.message
-        })
+        handleHttpError(res, error.message, 500)
     }
 }
 
@@ -85,10 +86,7 @@ UserController.updateUser = async (req, res) => {
             }
         })
         if (user[0] === 0) {
-            res.status(404).json({
-                status: 404,
-                message: 'User not found'
-            })
+            handleHttpError(res, 'User not found', 404)
         } else {
             res.status(200).json({
                 status: 200,
@@ -96,10 +94,7 @@ UserController.updateUser = async (req, res) => {
             })
         }
     } catch (error) {
-        res.status(500).json({
-            status: 500,
-            error: error.message
-        })
+        handleHttpError(res, error.message, 500)
     }
 }
 
@@ -119,10 +114,7 @@ UserController.deleteUser = async (req, res) => {
             }
         })
         if (user[0] === 0) {
-            res.status(404).json({
-                status: 404,
-                message: 'User not found'
-            })
+            handleHttpError(res, 'User not found', 404)
         }
         else {
             res.status(200).json({
@@ -131,10 +123,7 @@ UserController.deleteUser = async (req, res) => {
             })
         }
     } catch (error) {
-        res.status(500).json({
-            status: 500,
-            error: error.message
-        })
+        handleHttpError(res, error.message, 500)
     }
 }
 
@@ -153,10 +142,7 @@ UserController.restoreUser = async (req, res) => {
             }
         })
         if (user[0] === 0) {
-            res.status(404).json({
-                status: 404,
-                message: 'User not found'
-            })
+            handleHttpError(res, 'User not found', 404)
         }
         else {
             res.status(200).json({
@@ -165,10 +151,7 @@ UserController.restoreUser = async (req, res) => {
             })
         }
     } catch (error) {
-        res.status(500).json({
-            status: 500,
-            message: error.message
-        })
+        handleHttpError(res, error.message, 500)
     }
 }
 
@@ -189,10 +172,7 @@ UserController.getActiveUsers = async (req, res) => {
             data: users
         })
     } catch (error) {
-        res.status(500).json({
-            status: 500,
-            message: error.message
-        })
+        handleHttpError(res, error.message, 500)
     }
 }
 
