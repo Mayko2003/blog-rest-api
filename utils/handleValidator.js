@@ -13,7 +13,10 @@ const handleValidator = (req, res, next) => {
         validationResult(req).throw()
         next()
     } catch (error) {
-        res.status(400).json({ error: error.array() })
+        res.status(400).json({
+            status: 400,
+            error: error.array()
+        })
     }
 
 }
